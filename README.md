@@ -17,4 +17,7 @@ Statistics and synchronization
 CaloCalc stores statistics for last month that can be presented in printable format. The user can check and modify consumed food till the moment of the check. 
 CaloCalc synchronize its time via NTP server and if internet connection is not available - from the current system time.
 
-
+Dependencies:
+-------
+ntplib - https://pypi.python.org/pypi/ntplib/                                                
+SQLAlchemy - https://pypi.python.org/pypi/SQLAlchemy
