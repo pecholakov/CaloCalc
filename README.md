@@ -9,7 +9,7 @@ In a database is stored information about the type of the food, quantity, calori
 
 Account
 -------
-Every user can make his own account where will be stored statisics about him. The user must add basic information about his body when creates a new account. That includes weight, height, waist and hip, activity level and age. 
+Every user can make his own account where will be stored statisics about him. The user must add basic information about his body when creates a new account. That includes weight, height, gender, activity level and age. 
 To calculate the needed daily caloric intake, CaloCalc uses the Harris-Benedict equations. The necessary calories are separated into three groups - from fats, carbohydrates and proteins.
 
 Statistics and synchronization
