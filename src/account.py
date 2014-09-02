@@ -1,5 +1,8 @@
 from sqlalchemy.orm import sessionmaker
 from Crypto.Hash import SHA256
+from sqlalchemy.orm.attributes import instance_state
+from sqlalchemy.orm import object_session 
+from sqlalchemy.orm.util import has_identity
 
 import models
 
@@ -81,16 +84,52 @@ class Account:
         for row in self.session.query(models.Account).filter_by(name=user):
             return row.password == self.__crypt__(password)
 
+ # tuk samo da add-va i navednyj da commitva
  # can be implement with one() instead of first)
  # ne slaga preizchislnite recomended_stuff obratno v tablicata
     def update_field(self, user_name, field, value):
         user = self.session.query(models.Account).filter_by(
             name=user_name).first()
         setattr(user, field, value)
-        self.__calculate_nutrition__(user.__dict__)
-        rec_cals = user.__dict__["recomended_calories"]
-        setattr(user, "recomended_calories", rec_cals)
-        #self.session.commit()
-        return user.__dict__
+        print(user.__dict__, "@@@@@@@@@@@@@@@")
+        print("############################")
+        user_info = user.__dict__
+        self.__calculate_nutrition__(user_info)
+        # user.recomended_calories = a
+        # print(user.__dict__["recomended_calories"])
+        user.recomended_calories = user_info["recomended_calories"]
+        # setattr(user, "recomended_calories", user.__dict__["recomended_calories"])
+        print(user.__dict__)
+        self.session.add(user)
+        self.session.commit()
+
+        
+        
+        
         
 
+
+info = {
+    "name" : "Fiona",
+    "password" : Account.__crypt__("13da3cu7"),
+    "gender" : 'F',
+    "weight" : 51,
+    "height" : 173,
+    "activity_level" : 4,
+    "age" : 23,
+    "recomended_calories" : 0,
+    "recomended_proteins" : 0,
+    "recomended_carbs" : 0,
+    "recomended_fats" : 0,
+    "percent_proteins" : 0.4,
+    "percent_carbs" : 0.4,
+    "percent_fats" : 0.2
+}
+
+
+res = Account(models.connect())
+#res.add_account(info)
+res.update_field("Fiona", "weight", 56)
+#print(info)
+# Account.add_account()
+#print(res.update_field("Borisious", "age",  28))

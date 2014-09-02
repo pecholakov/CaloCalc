@@ -12,9 +12,9 @@ class Food:
                 name=food_info["name"].lower(),
                 quantity=food_info["quantity"],
                 calories=food_info["calories"],
-                proteins=food_info["proteins"],
-                carbs=food_info["carbs"],
-                fats=food_info["fats"]
+                proteins_g=food_info["proteins"],
+                carbs_g=food_info["carbs"],
+                fats_g=food_info["fats"]
             )
         self.session.add(food)
         self.session.commit()
@@ -27,14 +27,14 @@ class Food:
         self.session.commit()       
 
 info = {
-    "name" : "butter",
+    "name" : "SEEDS butte",
     "quantity" : 100,
     "calories" : 578,
-    "proteins" : 29.1,
-    "carbs" : 11.8,
-    "fats" : 46.1
+    "proteins_g" : 29.1,
+    "carbs_g" : 11.8,
+    "fats_g" : 46.1
 }        
 
 res = Food(models.connect())
 #res.add_food(info)
-res.update_field("SEEDS butter", "proteins", 22)
+res.update_field("SEEDS butte", "proteins_g", 22)

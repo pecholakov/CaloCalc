@@ -71,8 +71,18 @@ class Account(Base):
         "ConsumedFood", uselist=False, backref="accounts")
     stats = relationship("Statistics", uselist=False, backref="accounts")
 
-# TODO: Must add recomended and taken nutrition
+class ConsumedFood(Base):
+    __tablename__ = 'consumbedFood'
+    id = Column(Integer, primary_key=True)
+    multiplier_quantity = Column(Float)
+    name = Column(String(MAX_LENGTH), primary_key=False)
+    quantity = Column(Float, nullable=False)
+    calories = Column(Integer, nullable=False)
+    proteins_g = Column(Float, nullable=False)
+    carbs_g = Column(Float, nullable=False)
+    fats_g = Column(Float, nullable=False)
 
+    account_id = Column(Integer, ForeignKey('accounts.id'))
 
 class Statistics(Base):
     __tablename__ = 'statistics'
@@ -89,37 +99,23 @@ class Statistics(Base):
 
     account_id = Column(Integer, ForeignKey('accounts.id'))
 
-
 class Food(Base):
     __tablename__ = 'foodDB'
     id = Column(Integer, primary_key=True)
     name = Column(String(MAX_LENGTH), nullable=False, unique=True)
     quantity = Column(Float, nullable=False)
     calories = Column(Integer, nullable=False)
-    proteins = Column(Float, nullable=False)
-    carbs = Column(Float, nullable=False)
-    fats = Column(Float, nullable=False)
+    proteins_g = Column(Float, nullable=False)
+    carbs_g = Column(Float, nullable=False)
+    fats_g = Column(Float, nullable=False)
 
     # def __repr__(self):
     #     return "<Food(id='%s', name='%s', quantity='%s', calories='%s', proteins'%s', carbs = '%s', fats = '%s')>" % (
     #         self.id, self.name, self.quantity, self.calories, self.proteins, self.carbs,
     #         self.fats)
 
-# antoher fields for consumed food
+# another fields for consumed food
 
-
-class ConsumedFood(Base):
-    __tablename__ = 'consumbedFood'
-    id = Column(Integer, primary_key=True)
-    multiplier_quantity = Column(Float)
-    name = Column(String(MAX_LENGTH), primary_key=False)
-    quantity = Column(Float, nullable=False)
-    calories = Column(Integer, nullable=False)
-    proteins = Column(Float, nullable=False)
-    carbs = Column(Float, nullable=False)
-    fats = Column(Float, nullable=False)
-
-    account_id = Column(Integer, ForeignKey('accounts.id'))
 
 
 Base.metadata.create_all(engine)
