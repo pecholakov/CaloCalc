@@ -33,7 +33,15 @@ class ConsumedFood:
             self.session.commit()
         except (NoResultFound):
             self.session.rollback()
-        return res   
+    
+    def remove_consumed_food_by_id(self, food_id):
+        try:
+            res = self.session.query(models.ConsumedFood). \
+                filter(models.ConsumedFood.id == food_id). \
+                delete(synchronize_session='fetch')
+            self.session.commit()
+        except (NoResultFound):
+            self.session.rollback()       
 
     def give_consumed_food(self, account_id):
         consumed_food = self.session.query(models.ConsumedFood).filter_by(
@@ -74,5 +82,6 @@ info = {
 }
 
 res = ConsumedFood(models.connect())
-#res.add_consumed_food(14, 4.2, info)
-print(res.remove_consumed_food("peanut butter"))
+#res.add_consumed_food(1, 4.2, info)
+#res.remove_consumed_food_by_id(4)
+#print(res.remove_consumed_food("peanut butter"))

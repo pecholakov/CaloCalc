@@ -41,8 +41,23 @@ session = scoped_session(
 # TODO: add constraints
 # TODO: check ForeignKeys (recomended stuff)
 
+class Base():
+    """Extend the base class
 
-class Account(Base):
+    - Provides a nicer representation when a class instance is printed.
+        Found on the SA wiki
+    """
+    def __repr__(self):
+        return "%s(%s)" % (
+                 (self.__class__.__name__),
+                 ', '.join(["%s=%r" % (key, getattr(self, key))
+                            for key in sorted(self.__dict__.keys())
+                            if not key.startswith('_')]))
+
+DeclarativeBase = declarative_base(cls=Base)       
+metadata = DeclarativeBase.metadata
+
+class Account(DeclarativeBase):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
     name = Column(String(MAX_LENGTH), nullable=False, unique=True)
@@ -67,24 +82,7 @@ class Account(Base):
     percent_fats = Column(Float,
             CheckConstraint("percent_fats > 0 AND percent_fats < 1"))
 
-    consumed_food = relationship(
-        "ConsumedFood", uselist=False, backref="accounts")
-    stats = relationship("Statistics", uselist=False, backref="accounts")
-
-class ConsumedFood(Base):
-    __tablename__ = 'consumbedFood'
-    id = Column(Integer, primary_key=True)
-    multiplier_quantity = Column(Float)
-    name = Column(String(MAX_LENGTH), primary_key=False)
-    quantity = Column(Float, nullable=False)
-    calories = Column(Integer, nullable=False)
-    proteins_g = Column(Float, nullable=False)
-    carbs_g = Column(Float, nullable=False)
-    fats_g = Column(Float, nullable=False)
-
-    account_id = Column(Integer, ForeignKey('accounts.id'))
-
-class Statistics(Base):
+class Statistics(DeclarativeBase):
     __tablename__ = 'statistics'
     id = Column(Integer, primary_key=True)
     date = Column(Date, nullable=False)
@@ -98,8 +96,28 @@ class Statistics(Base):
     consumed_fats = Column(Float)
 
     account_id = Column(Integer, ForeignKey('accounts.id'))
+    account = relationship("Account", backref=backref("statistics", order_by=id))
 
-class Food(Base):
+class ConsumedFood(DeclarativeBase):
+    __tablename__ = 'consumedFood'
+    id = Column(Integer, primary_key=True)
+    multiplier_quantity = Column(Float)
+    name = Column(String(MAX_LENGTH), primary_key=False)
+    quantity = Column(Float, nullable=False)
+    calories = Column(Integer, nullable=False)
+    proteins_g = Column(Float, nullable=False)
+    carbs_g = Column(Float, nullable=False)
+    fats_g = Column(Float, nullable=False)
+
+    account_id = Column(Integer, ForeignKey('accounts.id'))
+    account = relationship("Account", backref=backref("consumedFood", order_by=id))
+
+    # def __repr__(self):
+    #     return "<ConsumedFood(id='%s', name='%s', quantity='%s', calories='%s', proteins'%s', carbs = '%s', fats = '%s')>" % (
+    #         self.id, self.name, self.quantity, self.calories, self.proteins_g, self.carbs_g,
+    #         self.fats_g)    
+
+class Food(DeclarativeBase):
     __tablename__ = 'foodDB'
     id = Column(Integer, primary_key=True)
     name = Column(String(MAX_LENGTH), nullable=False, unique=True)
@@ -118,4 +136,4 @@ class Food(Base):
 
 
 
-Base.metadata.create_all(engine)
+DeclarativeBase.metadata.create_all(engine)

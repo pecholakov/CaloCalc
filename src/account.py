@@ -1,10 +1,12 @@
 from sqlalchemy.orm import sessionmaker
 from Crypto.Hash import SHA256
 from sqlalchemy.orm.attributes import instance_state
-from sqlalchemy.orm import object_session 
+from sqlalchemy.orm import object_session
 from sqlalchemy.orm.util import has_identity
 
 import models
+import consumed_food, statistics
+
 
 class Account:
 
@@ -12,8 +14,7 @@ class Account:
         self.session = session
 
     def add_account(self, account_info):
-        self.__calculate_nutrition__(account_info)        
-
+        self.__calculate_nutrition__(account_info)
         account = models.Account(
             name=account_info["name"],
             password=account_info["password"],
@@ -31,6 +32,26 @@ class Account:
             percent_fats=account_info["percent_fats"])
         self.session.add(account)
         self.session.commit()
+
+ # tuk samo da add-va i navednyj da commitva
+ # can be implement with one() instead of first)
+ # ne slaga preizchislnite recomended_stuff obratno v tablicata
+    def update_field(self, user_name, field, value):
+        user = self.session.query(models.Account).filter_by(
+            name=user_name).first()
+        setattr(user, field, value)
+        # print(user.__dict__, "@@@@@@@@@@@@@@@")
+        # print("############################")
+        user_info = user.__dict__
+        self.__calculate_nutrition__(user_info)
+        #print(dir(user))
+        user.recomended_calories = user_info["recomended_calories"]
+        # setattr(user, "recomended_calories",
+        # user.__dict__["recomended_calories"])
+        self.session.add(user)
+        self.session.commit()
+
+        
 
 # Harris–Benedict equations revised by Roza and Shizgal
     def __calculate_recomended_calories__(self, account_info):
@@ -84,26 +105,6 @@ class Account:
         for row in self.session.query(models.Account).filter_by(name=user):
             return row.password == self.__crypt__(password)
 
- # tuk samo da add-va i navednyj da commitva
- # can be implement with one() instead of first)
- # ne slaga preizchislnite recomended_stuff obratno v tablicata
-    def update_field(self, user_name, field, value):
-        user = self.session.query(models.Account).filter_by(
-            name=user_name).first()
-        setattr(user, field, value)
-        print(user.__dict__, "@@@@@@@@@@@@@@@")
-        print("############################")
-        user_info = user.__dict__
-        self.__calculate_nutrition__(user_info)
-        # user.recomended_calories = a
-        # print(user.__dict__["recomended_calories"])
-        user.recomended_calories = user_info["recomended_calories"]
-        # setattr(user, "recomended_calories", user.__dict__["recomended_calories"])
-        print(user.__dict__)
-        self.session.add(user)
-        self.session.commit()
-
-        
         
         
         
@@ -111,7 +112,7 @@ class Account:
 
 info = {
     "name" : "Fiona",
-    "password" : Account.__crypt__("13da3cu7"),
+    "password" : Account.__crypt__("11da3cu7"),
     "gender" : 'F',
     "weight" : 51,
     "height" : 173,
@@ -128,8 +129,8 @@ info = {
 
 
 res = Account(models.connect())
-#res.add_account(info)
+# res.add_account(info)
 res.update_field("Fiona", "weight", 56)
-#print(info)
+# print(info)
 # Account.add_account()
-#print(res.update_field("Borisious", "age",  28))
+# print(res.update_field("Borisious", "age",  28))

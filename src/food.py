@@ -19,7 +19,7 @@ class Food:
         self.session.add(food)
         self.session.commit()
 
-#preizchislqvane 
+# izchislqvane na kaloriite
     def update_field(self, food_name, field, value):
         food = self.session.query(models.Food).filter_by(
             name=food_name.lower()).first()
@@ -34,6 +34,8 @@ info = {
     "carbs_g" : 11.8,
     "fats_g" : 46.1
 }        
+
+#TODO: GET FOOD RECORD
 
 res = Food(models.connect())
 #res.add_food(info)
