@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
 
 import models
-import account, consumed_food
+#import account, consumed_food
 
 class Statistics:
 
@@ -15,12 +15,16 @@ class Statistics:
 # take consumedFood from current account /query/
 #populate dict with info for the statistics by the account and its tied consumedFood    
     def  take_account_info(self, account_id):
-        qry = self.session.query(models.Account, models.ConsumedFood)
-        qry = qry.filter(models.Account.id==models.ConsumedFood.account_id).all()
-        print(qry[0].Account.password)
+        user = self.session.query(models.Account).filter_by(
+            id=account_id).all()
+
+        return user
 
     def take_consumed_food_info(self, account_id):
-        pass         
+        user = self.session.query(models.ConsumedFood).filter_by(
+            account_id=account_id).all()
+        for food in user:
+            print(food, "\n")         
 
-res = Statistics(models.connect())
-res.take_account_info(1)        
+pes = Statistics(models.connect())
+print(pes.take_account_info(1))        
