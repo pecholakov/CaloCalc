@@ -1,12 +1,9 @@
 from sqlalchemy.orm import sessionmaker
 from Crypto.Hash import SHA256
-from sqlalchemy.orm.attributes import instance_state
-from sqlalchemy.orm import object_session
-from sqlalchemy.orm.util import has_identity
+from sqlalchemy.orm.exc import NoResultFound
 
 import models
 from models import Account as account_db
-#import consumed_food, statistics
 
 
 class Account:
@@ -14,7 +11,7 @@ class Account:
     def __init__(self, session):
         self.session = session
 
-    def add_account(self, account_info):
+    def add(self, account_info):
         self.__calculate_nutrition__(account_info)
         account = account_db(
             name=account_info["name"],
@@ -52,15 +49,23 @@ class Account:
         self.session.add(user)
         self.session.commit()
 
-    def __calculate_nutrition__(self, account_info):
-        self.__calculate_recomended_calories__(account_info)
-        self.__calculate_recomended_proteins__(account_info)
-        self.__calculate_recomended_carbs__(account_info)
-        self.__calculate_recomended_fats__(account_info)
+    def get(self, account_id):
+        try:
+            user = self.session.query(account_db).filter_by(
+                id=account_id).one()
+        except (NoResultFound):
+            self.session.rollback()
+        else:
+            return user
 
+    def __calculate_nutrition__(self, account_info):
+        self.__calculate_recomended_calories(account_info)
+        self.__calculate_recomended_proteins(account_info)
+        self.__calculate_recomended_carbs(account_info)
+        self.__calculate_recomended_fats(account_info)
 
 # Harris–Benedict equations revised by Roza and Shizgal
-    def __calculate_recomended_calories__(self, account_info):
+    def __calculate_recomended_calories(self, account_info):
         self.weight = account_info["weight"]
         self.age = account_info["age"]
         self.height = account_info["height"]
@@ -86,26 +91,26 @@ class Account:
             self.calories = self.BMR * 1.9
         account_info["recomended_calories"] = int(self.calories)
 
-    def __calculate_recomended_proteins__(self, account_info):
+    def __calculate_recomended_proteins(self, account_info):
         self.recomended_calories = account_info["recomended_calories"]
         self.percent_proteins = account_info["percent_proteins"]
 
-        account_info["recomended_proteins"] =  int(self.recomended_calories * \
-            self.percent_proteins)
+        account_info["recomended_proteins"] = int(self.recomended_calories *
+                                                  self.percent_proteins)
 
     def __calculate_recomended_carbs__(self, account_info):
         self.recomended_calories = account_info["recomended_calories"]
         self.percent_carbs = account_info["percent_carbs"]
 
-        account_info["recomended_carbs"] = int(self.recomended_calories * \
-            self.percent_carbs)
+        account_info["recomended_carbs"] = int(self.recomended_calories *
+                                               self.percent_carbs)
 
-    def __calculate_recomended_fats__(self, account_info):
+    def __calculate_recomended_fats(self, account_info):
         self.recomended_calories = account_info["recomended_calories"]
         self.percent_fats = account_info["percent_fats"]
 
-        account_info["recomended_fats"] = int(self.recomended_calories * \
-            self.percent_fats)
+        account_info["recomended_fats"] = int(self.recomended_calories *
+                                              self.percent_fats)
 
     @classmethod
     def crypt(cls, password):
@@ -119,7 +124,7 @@ class Account:
 
 
 info = {
-    "name": "Josefina",
+    "name": "Melina",
     "password": Account.crypt("11da3cu7"),
     "gender": 'F',
     "weight": 56,
@@ -137,7 +142,8 @@ info = {
 
 
 res = Account(models.connect())
-res.add_account(info)
+#print(res.get(3).consumedFood)
+#print(res.get(3).statistics)
 #res.update_field("Fiona", "weight", 58)
 # print(info)
 #print(res.match_user_password("Fiona", "11da3cu7"))

@@ -27,13 +27,10 @@ def connect():
     Session = sessionmaker(bind=engine)
     return Session()
 
-
-Base = declarative_base()
 engine = create_engine('sqlite:///cc.db', echo=False)
-session = scoped_session(
-    sessionmaker(bind=engine, autocommit=False, autoflush=False))
+# session = scoped_session(
+#     sessionmaker(bind=engine, autocommit=False, autoflush=False))
 
-# TODO: add constraints
 
 """Extend the base class
 
@@ -53,6 +50,7 @@ class Base():
 DeclarativeBase = declarative_base(cls=Base)
 metadata = DeclarativeBase.metadata
 
+# TODO: add constraints
 class Account(DeclarativeBase):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
