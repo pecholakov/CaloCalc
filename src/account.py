@@ -1,6 +1,6 @@
-from sqlalchemy.orm import sessionmaker
-from Crypto.Hash import SHA256
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
+from Crypto.Hash import SHA256
 
 import models
 from models import Account as account_db
@@ -28,26 +28,25 @@ class Account:
             percent_proteins=account_info["percent_proteins"],
             percent_carbs=account_info["percent_carbs"],
             percent_fats=account_info["percent_fats"])
+
         self.session.add(account)
         self.session.commit()
 
- # tuk samo da add-va i navednyj da commitva
- # can be implement with one() instead of first)
- # ne slaga preizchislnite recomended_stuff obratno v tablicata
-    def update_field(self, user_name, field, value):
-        user = self.session.query(account_db).filter_by(
-            name=user_name).first()
-        setattr(user, field, value)
-        # print(user.__dict__, "@@@@@@@@@@@@@@@")
-        # print("############################")
-        user_info = user.__dict__
-        self.__calculate_nutrition__(user_info)
-        # print(dir(user))
-        user.recomended_calories = user_info["recomended_calories"]
-        # setattr(user, "recomended_calories",
-        # user.__dict__["recomended_calories"])
-        self.session.add(user)
-        self.session.commit()
+    def update_field(self, account_id, field, value):
+        user = self.get(account_id)
+        if user is not None:
+            setattr(user, field, value)
+            account_info = user.__dict__.copy()
+            self.__calculate_nutrition__(account_info)
+            setattr(user, "recomended_calories",
+                    account_info["recomended_calories"])
+            setattr(user, "recomended_proteins",
+                    account_info["recomended_proteins"])
+            setattr(user, "recomended_carbs",
+                    account_info["recomended_carbs"])
+            setattr(user, "recomended_fats",
+                    account_info["recomended_fats"])
+            self.session.commit()
 
     def get(self, account_id):
         try:
@@ -98,7 +97,7 @@ class Account:
         account_info["recomended_proteins"] = int(self.recomended_calories *
                                                   self.percent_proteins)
 
-    def __calculate_recomended_carbs__(self, account_info):
+    def __calculate_recomended_carbs(self, account_info):
         self.recomended_calories = account_info["recomended_calories"]
         self.percent_carbs = account_info["percent_carbs"]
 
@@ -142,8 +141,3 @@ info = {
 
 
 res = Account(models.connect())
-#print(res.get(3).consumedFood)
-#print(res.get(3).statistics)
-#res.update_field("Fiona", "weight", 58)
-# print(info)
-#print(res.match_user_password("Fiona", "11da3cu7"))

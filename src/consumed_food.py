@@ -3,6 +3,7 @@ from sqlalchemy import func
 from sqlalchemy.orm.exc import NoResultFound
 
 import models
+from models import ConsumedFood as consumed_food_db
 
 
 class ConsumedFood:
@@ -11,7 +12,7 @@ class ConsumedFood:
         self.session = session
 
     def add(self, account_id, multiplier, food_info):
-        consumed_food = models.ConsumedFood(
+        consumed_food = consumed_food_db(
             account_id=account_id,
             multiplier_quantity=multiplier,
             name=food_info["name"],
@@ -39,50 +40,39 @@ class ConsumedFood:
 
     def remove_record_by_id(self, food_id):
         try:
-            res = self.session.query(models.ConsumedFood). \
-                filter(models.ConsumedFood.id == food_id). \
-                delete(synchronize_session='fetch')
-            self.session.commit()
-        except (NoResultFound):
-            self.session.rollback()
-
-# TODO: lower() check where to add
-# TODO: remove consumed food for paticular account_id
-    def remove_record_by_name(self, food_name):
-        try:
-            res = self.session.query(models.ConsumedFood). \
-                filter(models.ConsumedFood.name == food_name). \
+            res = self.session.query(consumed_food_db). \
+                filter(consumed_food_db.id == food_id). \
                 delete(synchronize_session='fetch')
             self.session.commit()
         except (NoResultFound):
             self.session.rollback()
 
     def get_consumed_food(self, account_id):
-        consumed_food = self.session.query(models.ConsumedFood).filter_by(
+        consumed_food = self.session.query(consumed_food_db).filter_by(
             account_id=account_id).all()
         return consumed_food
 
     def get_consumed_calories(self, account_id):
         consumed_calories = self.session.query(
-            func.sum(models.ConsumedFood.calories).label("total_calories")). \
+            func.sum(consumed_food_db.calories).label("total_calories")). \
             filter(account_id == account_id).one()
         return int(consumed_calories.total_calories)
 
     def get_consumed_protein_calories(self, account_id):
         consumed_proteins = self.session.query(
-            func.sum(models.ConsumedFood.proteins_g).label("protein_grams")).\
+            func.sum(consumed_food_db.proteins_g).label("protein_grams")).\
             filter(account_id == account_id).one()
         return int(consumed_proteins.protein_grams * 4)
 
     def get_consumed_carbs_calories(self, account_id):
         consumed_carbs = self.session.query(
-            func.sum(models.ConsumedFood.carbs_g).label("carbs_grams")). \
+            func.sum(consumed_food_db.carbs_g).label("carbs_grams")). \
             filter(account_id == account_id).one()
         return int(consumed_carbs.carbs_grams * 4)
 
     def get_consumed_fats_calories(self, account_id):
         consumed_fats = self.session.query(
-            func.sum(models.ConsumedFood.fats_g).label("fats_grams")). \
+            func.sum(consumed_food_db.fats_g).label("fats_grams")). \
             filter(account_id == account_id).one()
         return int(consumed_fats.fats_grams * 9)
 
@@ -96,7 +86,3 @@ info = {
 }
 
 res = ConsumedFood(models.connect())
-#res.add_consumed_food(3, 3.2, info)
-#print(res.get_consumed_fats_calories(3))
-# res.remove_consumed_food_by_id(4)
-# print(res.remove_consumed_food("potatoes"))

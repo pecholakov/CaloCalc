@@ -1,4 +1,6 @@
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker 
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.exc import NoResultFound
 
 import models
 from models import Food as food_db
@@ -14,20 +16,36 @@ class Food:
             name=food_info["name"].lower(),
             quantity=food_info["quantity"],
             calories=food_info["calories"],
-            proteins_g=food_info["proteins"],
-            carbs_g=food_info["carbs"],
-            fats_g=food_info["fats"]
+            proteins_g=food_info["proteins_g"],
+            carbs_g=food_info["carbs_g"],
+            fats_g=food_info["fats_g"]
         )
         self.session.add(food)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except (SQLAlchemyError):
+            self.session.rollback()
 
+    
     def update_field(self, food_name, field, value):
-        food = self.session.query(food_db).filter_by(
-            name=food_name.lower()).first()
-        setattr(food, field, value)
-        self.session.commit()
+        try:
+            food = self.session.query(food_db).filter_by(
+                name=food_name).one()
+        except (NoResultFound):
+            self.session.rollback()
+        else:
+            setattr(food, field, value)
+            self.session.commit()
 
-# TODO: check lower()
+    def remove_by_name(self, food_name):
+        try:
+            row = self.session.query(food_db). \
+                filter(food_db.name == food_name). \
+                delete(synchronize_session='fetch')
+            self.session.commit()
+        except (NoResultFound):
+            self.session.rollback()
+
     def get(self, name):
         try:
             food = self.session.query(food_db).filter_by(
@@ -35,10 +53,11 @@ class Food:
         except (NoResultFound):
             self.session.rollback()
         else:
-            return food        
+            return food
+
 
 info = {
-    "name": "SEEDS butter",
+    "name": "peanut butter",
     "quantity": 100,
     "calories": 578,
     "proteins_g": 29.1,
@@ -48,5 +67,3 @@ info = {
 
 
 res = Food(models.connect())
-# res.add_food(info)
-#res.update_field("SEEDS butter", "proteins_g", 22)

@@ -22,6 +22,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 MAX_LENGTH = 64
 
+
 def connect():
     engine = create_engine('sqlite:///cc.db', echo=False)
     Session = sessionmaker(bind=engine)
@@ -37,6 +38,8 @@ engine = create_engine('sqlite:///cc.db', echo=False)
         Provides a nicer representation when a class instance is printed.
         Found on the SA wiki
 """
+
+
 class Base():
 
     def __repr__(self):
@@ -51,6 +54,8 @@ DeclarativeBase = declarative_base(cls=Base)
 metadata = DeclarativeBase.metadata
 
 # TODO: add constraints
+
+
 class Account(DeclarativeBase):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
@@ -100,7 +105,7 @@ class ConsumedFood(DeclarativeBase):
     id = Column(Integer, primary_key=True)
     account_id = Column(Integer, ForeignKey('accounts.id'))
     multiplier_quantity = Column(Float)
-    name = Column(String(MAX_LENGTH), primary_key=False)
+    name = Column(String(MAX_LENGTH), nullable=False)
     quantity = Column(Float, nullable=False)
     calories = Column(Integer, nullable=False)
     proteins_g = Column(Float, nullable=False)
@@ -112,7 +117,7 @@ class ConsumedFood(DeclarativeBase):
 
 
 class Food(DeclarativeBase):
-    __tablename__ = 'foodDB'
+    __tablename__ = 'foods'
     id = Column(Integer, primary_key=True)
     name = Column(String(MAX_LENGTH), nullable=False, unique=True)
     quantity = Column(Float, nullable=False)
