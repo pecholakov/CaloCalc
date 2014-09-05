@@ -5,7 +5,7 @@ CaloCalc calculates the daily caloric intake and how many of those calories come
 
 Database with food
 -------
-In a database is stored information about the type of the food, quantity, calories, chemical composition (fats, carbohydrates and proteins). In this database the user can add new food, to modify values, to import and to export the database.
+In a database is stored information about the type of the food, quantity, calories, chemical composition (fats, carbohydrates and proteins). In this database the user can add new food, to modify values.
 
 Account
 -------
