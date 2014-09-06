@@ -14,8 +14,8 @@ To calculate the needed daily caloric intake, CaloCalc uses the Harris-Benedict 
 
 Statistics and synchronization
 -------
-CaloCalc stores statistics for last month that can be presented in printable format. The user can check and modify consumed food till the moment of the check. 
-CaloCalc synchronize its time via NTP server and if internet connection is not available - from the current system time.
+CaloCalc stores statistics for the last month that can be presented in printable format. Users can check and modify consumed food till the moment of the check. 
+CaloCalc synchronizes its time via NTP server and if internet connection is not available - from the current system time.
 
 Dependencies:
 -------
