@@ -63,8 +63,20 @@ class Account:
         try:
             user = self.session.query(account_db).filter_by(
                 name=account_name).one()
+            return user
         except (NoResultFound):
+            print("Ne stana")
             self.session.rollback()    
+
+    def delete_account(self, user_name, password):
+        if self.match_user_password(self.session, user_name, password):
+            try:
+                row = self.session.query(account_db). \
+                    filter(account_db.name == user_name). \
+                    delete(synchronize_session='fetch')
+                self.session.commit()
+            except (NoResultFound):
+                self.session.rollback()       
             
     def __calculate_nutrition__(self, account_info):
         self.__calculate_recomended_calories(account_info)
@@ -154,8 +166,3 @@ info = {
     "percent_carbs": 0.4,
     "percent_fats": 0.2
 }
-
-
-res = Account(connect())
-#res.add(info)
-#print(Account.match_user_password(connect(), "Fiona", "4da3cu7"))
