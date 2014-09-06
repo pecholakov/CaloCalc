@@ -2,7 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 from Crypto.Hash import SHA256
 
-import models
+from models import connect
 from models import Account as account_db
 
 
@@ -30,7 +30,10 @@ class Account:
             percent_fats=account_info["percent_fats"])
 
         self.session.add(account)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except (SQLAlchemyError):
+            self.session.rollback()
 
     def update_field(self, account_id, field, value):
         user = self.get(account_id)
@@ -52,11 +55,17 @@ class Account:
         try:
             user = self.session.query(account_db).filter_by(
                 id=account_id).one()
+            return user
         except (NoResultFound):
             self.session.rollback()
-        else:
-            return user
 
+    def get_by_name(self, account_name):
+        try:
+            user = self.session.query(account_db).filter_by(
+                name=account_name).one()
+        except (NoResultFound):
+            self.session.rollback()    
+            
     def __calculate_nutrition__(self, account_info):
         self.__calculate_recomended_calories(account_info)
         self.__calculate_recomended_proteins(account_info)
@@ -116,15 +125,22 @@ class Account:
         cls.pw_bytes = password.encode('utf-8')
         return SHA256.new(cls.pw_bytes).hexdigest()
 
-# one catch exception
-    def match_user_password(self, user_name, password):
-        user = self.session.query(account_db).filter_by(name=user_name).one()
-        return user.password == self.crypt(password)
+    @classmethod
+    def match_user_password(cls, session, user_name, password):
+        try:
+            user = session.query(account_db).filter_by(name=user_name).one()
+            return user.password == cls.crypt(password)
+        except(NoResultFound):
+             return None   
 
+    @classmethod    
+    def check_percents(cls, proteins, carbs, fats):
+        return (proteins + carbs + fats) == 1
+    
 
 info = {
-    "name": "Melina",
-    "password": Account.crypt("11da3cu7"),
+    "name": "Fiona",
+    "password": Account.crypt("4da3cu7"),
     "gender": 'F',
     "weight": 56,
     "height": 176,
@@ -140,4 +156,6 @@ info = {
 }
 
 
-res = Account(models.connect())
+res = Account(connect())
+#res.add(info)
+#print(Account.match_user_password(connect(), "Fiona", "4da3cu7"))

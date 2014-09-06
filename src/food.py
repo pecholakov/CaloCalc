@@ -2,7 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 
-import models
+from models import connect
 from models import Food as food_db
 
 
@@ -31,11 +31,10 @@ class Food:
         try:
             food = self.session.query(food_db).filter_by(
                 name=food_name).one()
-        except (NoResultFound):
-            self.session.rollback()
-        else:
             setattr(food, field, value)
             self.session.commit()
+        except (NoResultFound):
+            self.session.rollback()
 
     def remove_by_name(self, food_name):
         try:
@@ -50,20 +49,18 @@ class Food:
         try:
             food = self.session.query(food_db).filter_by(
                 name=name).one()
+            return food
         except (NoResultFound):
             self.session.rollback()
-        else:
-            return food
 
 
-info = {
-    "name": "peanut butter",
-    "quantity": 100,
-    "calories": 578,
-    "proteins_g": 29.1,
-    "carbs_g": 11.8,
-    "fats_g": 46.1
-}
+# info = {
+#     "name": "butter",
+#     "quantity": 100,
+#     "calories": 578,
+#     "proteins_g": 1.2,
+#     "carbs_g": 0.8,
+#     "fats_g": 94.3
+# }
 
-
-res = Food(models.connect())
+res = Food(connect())

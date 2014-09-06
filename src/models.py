@@ -55,7 +55,6 @@ metadata = DeclarativeBase.metadata
 
 # TODO: add constraints
 
-
 class Account(DeclarativeBase):
     __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
