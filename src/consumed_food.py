@@ -19,15 +19,15 @@ class ConsumedFood:
             name=food_info["name"],
             quantity=food_info["quantity"] * multiplier,
             calories=int(food_info["calories"] * multiplier),
-            proteins_g=round(food_info["proteins"] * multiplier, 2),
-            carbs_g=round(food_info["carbs"] * multiplier, 2),
-            fats_g=round(food_info["fats"] * multiplier, 2)
+            proteins_g=round(food_info["proteins_g"] * multiplier, 2),
+            carbs_g=round(food_info["carbs_g"] * multiplier, 2),
+            fats_g=round(food_info["fats_g"] * multiplier, 2)
         )
         self.session.add(consumed_food)
         try:
             self.session.commit()
         except (SQLAlchemyError):
-            self.session.rollback()
+            self.session.rollback()  
 
     def get_statistics(self, account_id):
         self.food_statistics = {}
@@ -95,16 +95,3 @@ class ConsumedFood:
                 return int(consumed_fats.fats_grams * 9)
         except (NoResultFound):
             self.session.rollback()
-
-
-info = {
-    "name": "potatoes",
-    "quantity": 100,
-    "calories": 478,
-    "proteins": 24,
-    "carbs": 55.2,
-    "fats": 41
-}
-
-res = ConsumedFood(connect())
-res.get_consumed_calories(1)

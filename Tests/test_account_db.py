@@ -27,9 +27,12 @@ class TestAccoundController(unittest.TestCase):
             "percent_carbs": 0.4,
             "percent_fats": 0.2
         }
+        self.tester.add(self.info)
+
+    def tearDown(self):
+         self.tester.delete_account("Fiona", self.account_password)  
 
     def test_add_account(self):
-        self.tester.add(self.info)
         self.account_attributes = (self.tester.get_by_name("Fiona")).__dict__
         self.dict = {}
         self.dict["name"] = self.account_attributes["name"]
@@ -54,27 +57,20 @@ class TestAccoundController(unittest.TestCase):
 
         self.assertEqual(self.info, self.dict)
         self.tester.delete_account(self.dict["name"], self.dict["password"])
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_add_same_account_twice(self):
-        self.tester.add(self.info)
         self.assertIsNone(self.tester.add(self.info))
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_get_account_by_name(self):
-        self.tester.add(self.info)
         self.assertEqual("Fiona", (self.tester.get_by_name("Fiona")).name)
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_update_name(self):
-        self.tester.add(self.info)
         self.tester.update_field(
             (self.tester.get_by_name("Fiona")).id, "name", "Sophie")
         self.assertEqual("Sophie", (self.tester.get_by_name("Sophie")).name)
         self.tester.delete_account("Sophie", self.account_password)
 
     def test_update_pass(self):
-        self.tester.add(self.info)
         self.tester.update_field(
             (self.tester.get_by_name("Fiona")).id, "password", "49qw5")
         self.assertEqual("49qw5", (self.tester.get_by_name("Fiona")).password)
@@ -83,7 +79,6 @@ class TestAccoundController(unittest.TestCase):
     def test_update_weight(self):
         self.attribute = "weight"
         self.new_value = 50
-        self.tester.add(self.info)
         self.account_attributes = (
             self.tester.get_by_name("Fiona")).__dict__.copy()
         self.account_attributes[self.attribute] = self.new_value
@@ -106,12 +101,10 @@ class TestAccoundController(unittest.TestCase):
         self.assertEqual(self.account_attributes["recomended_fats"],
                          (self.tester.get_by_name("Fiona")).
                          recomended_fats)
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_update_height(self):
         self.attribute = "height"
         self.new_value = 60
-        self.tester.add(self.info)
         self.account_attributes = (
             self.tester.get_by_name("Fiona")).__dict__.copy()
         self.account_attributes[self.attribute] = self.new_value
@@ -134,12 +127,10 @@ class TestAccoundController(unittest.TestCase):
         self.assertEqual(self.account_attributes["recomended_fats"],
                          (self.tester.get_by_name("Fiona")).
                          recomended_fats)
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_update_gender(self):
         self.attribute = "gender"
         self.new_value = 'M'
-        self.tester.add(self.info)
         self.account_attributes = (
             self.tester.get_by_name("Fiona")).__dict__.copy()
         self.account_attributes[self.attribute] = self.new_value
@@ -162,12 +153,10 @@ class TestAccoundController(unittest.TestCase):
         self.assertEqual(self.account_attributes["recomended_fats"],
                          (self.tester.get_by_name("Fiona")).
                          recomended_fats)
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_update_activity_level(self):
         self.attribute = "activity_level"
         self.new_value = 5
-        self.tester.add(self.info)
         self.account_attributes = (
             self.tester.get_by_name("Fiona")).__dict__.copy()
         self.account_attributes[self.attribute] = self.new_value
@@ -190,12 +179,10 @@ class TestAccoundController(unittest.TestCase):
         self.assertEqual(self.account_attributes["recomended_fats"],
                          (self.tester.get_by_name("Fiona")).
                          recomended_fats)
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_update_age(self):
         self.attribute = "age"
         self.new_value = 60
-        self.tester.add(self.info)
         self.account_attributes = (
             self.tester.get_by_name("Fiona")).__dict__.copy()
         self.account_attributes[self.attribute] = self.new_value
@@ -218,54 +205,38 @@ class TestAccoundController(unittest.TestCase):
         self.assertEqual(self.account_attributes["recomended_fats"],
                          (self.tester.get_by_name("Fiona")).
                          recomended_fats)
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_get_accout_by_id(self):
-        self.tester.add(self.info)
         self.assertEqual((self.tester.get_by_name("Fiona")),
                          self.tester.get(1))
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_delete_account(self):
-        self.tester.add(self.info)
         self.tester.delete_account("Fiona", self.account_password)
         self.assertIsNone(self.tester.get_by_name("Fiona"))
 
     def test_calculate_recomended_calories(self):
-        self.tester.add(self.info)
         self.assertEqual(2187, self.info["recomended_calories"])
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_calculate_recomended_proteins(self):
-        self.tester.add(self.info)
         self.assertEqual(874, self.info["recomended_proteins"])
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_calculate_recomended_carbs(self):
-        self.tester.add(self.info)
         self.assertEqual(874, self.info["recomended_carbs"])
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_calculate_recomended_fats(self):
-        self.tester.add(self.info)
         self.assertEqual(437, self.info["recomended_fats"])
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_match_user_password_true(self):
-        self.tester.add(self.info)
         self.assertTrue(
             self.tester.match_user_password(models.connect(),
                                             "Fiona",
                                             self.account_password))
-        self.tester.delete_account("Fiona", self.account_password)
 
     def test_match_user_password_false(self):
-        self.tester.add(self.info)
         self.assertFalse(
             self.tester.match_user_password(models.connect(),
                                             "Fiona",
-                                            "wrong_password"))
-        self.tester.delete_account("Fiona", self.account_password)     
+                                            "wrong_password"))     
 
 if __name__ == '__main__':
     unittest.main()
