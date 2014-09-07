@@ -220,18 +220,52 @@ class TestAccoundController(unittest.TestCase):
                          recomended_fats)
         self.tester.delete_account("Fiona", self.account_password)
 
+    def test_get_accout_by_id(self):
+        self.tester.add(self.info)
+        self.assertEqual((self.tester.get_by_name("Fiona")),
+                         self.tester.get(1))
+        self.tester.delete_account("Fiona", self.account_password)
+
     def test_delete_account(self):
         self.tester.add(self.info)
         self.tester.delete_account("Fiona", self.account_password)
         self.assertIsNone(self.tester.get_by_name("Fiona"))
 
-        
-
-    def test_match_user_password(self):
+    def test_calculate_recomended_calories(self):
         self.tester.add(self.info)
-        self.assertEqual(
-            self.info["password"], (self.tester.get_by_name("Fiona")).password)
+        self.assertEqual(2187, self.info["recomended_calories"])
         self.tester.delete_account("Fiona", self.account_password)
+
+    def test_calculate_recomended_proteins(self):
+        self.tester.add(self.info)
+        self.assertEqual(874, self.info["recomended_proteins"])
+        self.tester.delete_account("Fiona", self.account_password)
+
+    def test_calculate_recomended_carbs(self):
+        self.tester.add(self.info)
+        self.assertEqual(874, self.info["recomended_carbs"])
+        self.tester.delete_account("Fiona", self.account_password)
+
+    def test_calculate_recomended_fats(self):
+        self.tester.add(self.info)
+        self.assertEqual(437, self.info["recomended_fats"])
+        self.tester.delete_account("Fiona", self.account_password)
+
+    def test_match_user_password_true(self):
+        self.tester.add(self.info)
+        self.assertTrue(
+            self.tester.match_user_password(models.connect(),
+                                            "Fiona",
+                                            self.account_password))
+        self.tester.delete_account("Fiona", self.account_password)
+
+    def test_match_user_password_false(self):
+        self.tester.add(self.info)
+        self.assertFalse(
+            self.tester.match_user_password(models.connect(),
+                                            "Fiona",
+                                            "wrong_password"))
+        self.tester.delete_account("Fiona", self.account_password)     
 
 if __name__ == '__main__':
     unittest.main()
