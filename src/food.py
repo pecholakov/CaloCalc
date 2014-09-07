@@ -1,4 +1,4 @@
-from sqlalchemy.orm import sessionmaker 
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -13,7 +13,7 @@ class Food:
 
     def add(self, food_info):
         food = food_db(
-            name=food_info["name"].lower(),
+            name=food_info["name"],
             quantity=food_info["quantity"],
             calories=food_info["calories"],
             proteins_g=food_info["proteins_g"],
@@ -26,7 +26,6 @@ class Food:
         except (SQLAlchemyError):
             self.session.rollback()
 
-    
     def update_field(self, food_name, field, value):
         try:
             food = self.session.query(food_db).filter_by(
@@ -52,15 +51,3 @@ class Food:
             return food
         except (NoResultFound):
             self.session.rollback()
-
-
-# info = {
-#     "name": "butter",
-#     "quantity": 100,
-#     "calories": 578,
-#     "proteins_g": 1.2,
-#     "carbs_g": 0.8,
-#     "fats_g": 94.3
-# }
-
-res = Food(connect())

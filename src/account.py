@@ -34,8 +34,11 @@ class Account:
             self.session.commit()
         except (SQLAlchemyError):
             self.session.rollback()
+            return None
 
+# TODO: make percent check
     def update_field(self, account_id, field, value):
+        self.percents = ["percent_proteins", "percent_carbs", "percent_fats"]
         user = self.get(account_id)
         if user is not None:
             setattr(user, field, value)
@@ -65,8 +68,7 @@ class Account:
                 name=account_name).one()
             return user
         except (NoResultFound):
-            print("Ne stana")
-            self.session.rollback()    
+            self.session.rollback()
 
     def delete_account(self, user_name, password):
         if self.match_user_password(self.session, user_name, password):
@@ -75,9 +77,9 @@ class Account:
                     filter(account_db.name == user_name). \
                     delete(synchronize_session='fetch')
                 self.session.commit()
-            except (NoResultFound):
-                self.session.rollback()       
-            
+            except:
+                self.session.rollback()
+
     def __calculate_nutrition__(self, account_info):
         self.__calculate_recomended_calories(account_info)
         self.__calculate_recomended_proteins(account_info)
@@ -137,32 +139,15 @@ class Account:
         cls.pw_bytes = password.encode('utf-8')
         return SHA256.new(cls.pw_bytes).hexdigest()
 
+    """ Method expects already crypted password"""
     @classmethod
     def match_user_password(cls, session, user_name, password):
         try:
             user = session.query(account_db).filter_by(name=user_name).one()
-            return user.password == cls.crypt(password)
+            return user.password == password
         except(NoResultFound):
-             return None   
+            return False
 
-    @classmethod    
+    @classmethod
     def check_percents(cls, proteins, carbs, fats):
         return (proteins + carbs + fats) == 1
-    
-
-info = {
-    "name": "Fiona",
-    "password": Account.crypt("4da3cu7"),
-    "gender": 'F',
-    "weight": 56,
-    "height": 176,
-    "activity_level": 3,
-    "age": 25,
-    "recomended_calories": 0,
-    "recomended_proteins": 0,
-    "recomended_carbs": 0,
-    "recomended_fats": 0,
-    "percent_proteins": 0.4,
-    "percent_carbs": 0.4,
-    "percent_fats": 0.2
-}
