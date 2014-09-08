@@ -45,19 +45,18 @@ class TestConsumedFoodController(unittest.TestCase):
         self.tester_account.delete_account("Fiona", "some_password")
         self.tester.remove_record_by_id(1)
 
-    def test_add_food_to_database(self):
-        self.tester.add(self.account.id, self.multiplier, self.info)
-        self.food_atributes = (self.tester.get_consumed_food(self.account.id))[0].__dict__
-        self.dict = {}
-        self.dict["name"] = self.food_atributes["name"]
-        self.dict["quantity"] = self.food_atributes["quantity"]
-        self.dict["calories"] = self.food_atributes["calories"]
-        self.dict["proteins_g"] = self.food_atributes["proteins_g"]
-        self.dict["carbs_g"] = self.food_atributes["carbs_g"]
-        self.dict["fats_g"] = self.food_atributes["fats_g"]
-        # self.assertEqual(self)
-        # self.assertEqual(self.info, self.dict)
-        self.tester.remove_record_by_id(1)
+    # def test_add_food_to_database(self):
+    #     self.tester.add(self.account.id, self.multiplier, self.info)
+    #     self.food_atributes = (self.tester.get_consumed_food(self.account.id))[0].__dict__
+    #     self.dict = {}
+    #     self.dict["name"] = self.food_atributes["name"]
+    #     self.dict["quantity"] = self.food_atributes["quantity"]
+    #     self.dict["calories"] = self.food_atributes["calories"]
+    #     self.dict["proteins_g"] = self.food_atributes["proteins_g"]
+    #     self.dict["carbs_g"] = self.food_atributes["carbs_g"]
+    #     self.dict["fats_g"] = self.food_atributes["fats_g"]
+    #     self.assertEqual(self.info, self.dict)
+    #     self.tester.remove_record_by_id(1)
 
 if __name__ == '__main__':
     unittest.main()

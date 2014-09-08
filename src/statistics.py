@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
+import tabulate
 
 from models import connect
 from models import Statistics as statistics_db
@@ -43,10 +44,17 @@ class Statistics:
     def generate_stastics_file(self, account_id):
         statistic_rows = []
         table = self.get(account_id)
+
+        result = []
+        for entry in table:
+            result.append([])
+            l = [a for a in dir(entry) if not a.startswith('__') and not callable(getattr(entry,a))]
+            for column in l:
+                result[-1].append(column)
+
         column_titles = ["Date", "Recomended calories", "Consumed calories",
                          "Recomended proteins", "Consumed proteins",
                          "Recomended carbs", "Consumed carbs",
                          "Recomended fats", "Consumed fats"]
-
-
-pes = Statistics(connect())
+        #print(table)  
+           

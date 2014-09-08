@@ -44,14 +44,10 @@ class Account:
             setattr(user, field, value)
             account_info = user.__dict__.copy()
             self.__calculate_nutrition__(account_info)
-            setattr(user, "recomended_calories",
-                    account_info["recomended_calories"])
-            setattr(user, "recomended_proteins",
-                    account_info["recomended_proteins"])
-            setattr(user, "recomended_carbs",
-                    account_info["recomended_carbs"])
-            setattr(user, "recomended_fats",
-                    account_info["recomended_fats"])
+            user.recomended_calories = account_info["recomended_calories"]
+            user.recomended_proteins = account_info["recomended_proteins"]
+            user.recomended_carbs = account_info["recomended_carbs"]
+            user.recomended_fats = account_info["recomended_fats"]
             self.session.commit()
 
     def get(self, account_id):
