@@ -19,5 +19,4 @@ CaloCalc synchronizes its time via NTP server and if internet connection is not 
 
 Dependencies:
 -------
-ntplib - https://pypi.python.org/pypi/ntplib/                                                
-SQLAlchemy - https://pypi.python.org/pypi/SQLAlchemy
+SQLAlchemy 0.9.7 - https://pypi.python.org/pypi/SQLAlchemy
