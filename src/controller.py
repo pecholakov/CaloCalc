@@ -19,7 +19,7 @@ class Controller:
             cls.loaded_user = cls.account.get_by_name(user_name)
             cls.logged_in = True
         else:
-            #"Wrong account or password!"
+            # Wrong account or password!
             return None    
             
     @classmethod

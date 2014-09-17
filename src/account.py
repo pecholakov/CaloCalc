@@ -36,18 +36,35 @@ class Account:
             self.session.rollback()
             return None
 
-# TODO: make percent check
     def update_field(self, account_id, field, value):
         self.percents = ["percent_proteins", "percent_carbs", "percent_fats"]
         user = self.get(account_id)
         if user is not None:
-            setattr(user, field, value)
-            account_info = user.__dict__.copy()
-            self.__calculate_nutrition__(account_info)
-            user.recomended_calories = account_info["recomended_calories"]
-            user.recomended_proteins = account_info["recomended_proteins"]
-            user.recomended_carbs = account_info["recomended_carbs"]
-            user.recomended_fats = account_info["recomended_fats"]
+            if isinstance(field, dict):
+                if self.check_percents(field["percent_proteins"],
+                                       field["percent_carbs"],
+                                       field["percent_fats"]):
+                    user.percent_proteins = field["percent_proteins"]
+                    user.percent_carbs = field["percent_carbs"]
+                    user.percent_fats = field["percent_fats"]
+                    account_info = user.__dict__.copy()
+                    self.__calculate_nutrition__(account_info)
+                    user.recomended_calories = \
+                        account_info["recomended_calories"]
+                    user.recomended_proteins = \
+                        account_info["recomended_proteins"]
+                    user.recomended_carbs = account_info["recomended_carbs"]
+                    user.recomended_fats = account_info["recomended_fats"]
+                else:
+                    return None
+            else:
+                setattr(user, field, value)
+                account_info = user.__dict__.copy()
+                self.__calculate_nutrition__(account_info)
+                user.recomended_calories = account_info["recomended_calories"]
+                user.recomended_proteins = account_info["recomended_proteins"]
+                user.recomended_carbs = account_info["recomended_carbs"]
+                user.recomended_fats = account_info["recomended_fats"]
             self.session.commit()
 
     def get(self, account_id):
@@ -57,6 +74,7 @@ class Account:
             return user
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def get_by_name(self, account_name):
         try:
@@ -65,6 +83,7 @@ class Account:
             return user
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def delete_account(self, user_name, password):
         if self.match_user_password(self.session, user_name, password):
@@ -75,6 +94,7 @@ class Account:
                 self.session.commit()
             except:
                 self.session.rollback()
+                return None
 
     def __calculate_nutrition__(self, account_info):
         self.__calculate_recomended_calories(account_info)

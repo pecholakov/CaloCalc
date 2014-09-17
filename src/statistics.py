@@ -1,7 +1,6 @@
 import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import func
-import tabulate
 
 from models import connect
 from models import Statistics as statistics_db
@@ -33,7 +32,11 @@ class Statistics:
             consumed_fats=consumed_food_info["consumed_fats"]
         )
         self.session.add(statistics)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except (SQLAlchemyError):
+            self.session.rollback()
+            return None
 
     def get(self, account_id):
         statistics = self.session.query(statistics_db).filter_by(

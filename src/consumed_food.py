@@ -27,7 +27,8 @@ class ConsumedFood:
         try:
             self.session.commit()
         except (SQLAlchemyError):
-            self.session.rollback()  
+            self.session.rollback()
+            return None  
 
     def get_statistics(self, account_id):
         self.food_statistics = {}
@@ -50,6 +51,7 @@ class ConsumedFood:
             self.session.commit()
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def get_consumed_food(self, account_id):
         consumed_food = self.session.query(consumed_food_db).filter_by(
@@ -65,6 +67,7 @@ class ConsumedFood:
                 return int(consumed_calories.total_calories)
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def get_consumed_protein_calories(self, account_id):
         try:       
@@ -75,6 +78,7 @@ class ConsumedFood:
                 return int(consumed_proteins.protein_grams * 4)
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def get_consumed_carbs_calories(self, account_id):
         try:
@@ -84,7 +88,8 @@ class ConsumedFood:
             if None not in consumed_carbs:    
                 return int(consumed_carbs.carbs_grams * 4)
         except (NoResultFound):
-            self.session.rollback()    
+            self.session.rollback()
+            return None    
 
     def get_consumed_fats_calories(self, account_id):
         try:
@@ -95,3 +100,4 @@ class ConsumedFood:
                 return int(consumed_fats.fats_grams * 9)
         except (NoResultFound):
             self.session.rollback()
+            return None

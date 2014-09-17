@@ -25,6 +25,7 @@ class Food:
             self.session.commit()
         except (SQLAlchemyError):
             self.session.rollback()
+            return None
 
     def update_field(self, food_name, field, value):
         try:
@@ -34,6 +35,7 @@ class Food:
             self.session.commit()
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def remove_by_name(self, food_name):
         try:
@@ -43,6 +45,7 @@ class Food:
             self.session.commit()
         except (NoResultFound):
             self.session.rollback()
+            return None
 
     def get(self, name):
         try:
@@ -51,3 +54,4 @@ class Food:
             return food
         except (NoResultFound):
             self.session.rollback()
+            return None
