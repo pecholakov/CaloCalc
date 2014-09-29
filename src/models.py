@@ -53,7 +53,6 @@ class Base():
 DeclarativeBase = declarative_base(cls=Base)
 metadata = DeclarativeBase.metadata
 
-# TODO: add constraints
 
 class Account(DeclarativeBase):
     __tablename__ = 'accounts'
